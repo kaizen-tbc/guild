@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "savedAt": "2026-05-13T21:52:36.314Z",
+  "savedAt": "2026-05-13T21:57:42.496Z",
   "roster": [
     {
       "id": 1,
       "name": "Bradpitiful",
       "class": "Warrior",
-      "ms": "Protection",
-      "os": "Fury",
+      "ms": "Fury",
+      "os": "Protection",
       "role": "Tank",
-      "status": "Main",
-      "altOf": "",
+      "status": "Alt",
+      "altOf": "Zabanya",
       "notes": ""
     },
     {
@@ -53,8 +53,8 @@
       "ms": "Restoration",
       "os": "Balance",
       "role": "Healer",
-      "status": "Main",
-      "altOf": "",
+      "status": "Alt",
+      "altOf": "Tilatia",
       "notes": ""
     },
     {
@@ -75,7 +75,7 @@
       "ms": "Holy",
       "os": "",
       "role": "Healer",
-      "status": "Main",
+      "status": "Casual",
       "altOf": "",
       "notes": ""
     },
@@ -94,11 +94,11 @@
       "id": 9,
       "name": "Depew",
       "class": "Shaman",
-      "ms": "Enhancement",
-      "os": "Restoration",
-      "role": "Melee",
-      "status": "Main",
-      "altOf": "",
+      "ms": "Restoration",
+      "os": "Enhancement",
+      "role": "Healer",
+      "status": "Alt",
+      "altOf": "Vestuvian",
       "notes": ""
     },
     {
@@ -241,7 +241,7 @@
       "os": "Retribution",
       "role": "Tank",
       "status": "Alt",
-      "altOf": "Bradpitiful",
+      "altOf": "Zabanya",
       "notes": ""
     },
     {
@@ -252,7 +252,7 @@
       "os": "Protection",
       "role": "Melee",
       "status": "Alt",
-      "altOf": "Depew",
+      "altOf": "Vestuvian",
       "notes": ""
     },
     {
@@ -262,8 +262,8 @@
       "ms": "Beastmastery",
       "os": "",
       "role": "Ranged",
-      "status": "Alt",
-      "altOf": "Healkinz",
+      "status": "Main",
+      "altOf": "",
       "notes": ""
     },
     {
@@ -281,11 +281,11 @@
       "id": 26,
       "name": "Vestuvian",
       "class": "Priest",
-      "ms": "Shadow",
+      "ms": "Holy",
       "os": "",
       "role": "Ranged",
-      "status": "Alt",
-      "altOf": "Depew",
+      "status": "Main",
+      "altOf": "",
       "notes": ""
     },
     {
@@ -335,11 +335,11 @@
     {
       "id": 31,
       "name": "Muvrin",
-      "class": "Warrior",
-      "ms": "Arms",
+      "class": "Warlock",
+      "ms": "Destruction",
       "os": "",
-      "role": "Melee",
-      "status": "Casual",
+      "role": "Ranged",
+      "status": "Main",
       "altOf": "",
       "notes": ""
     },
@@ -361,7 +361,7 @@
       "ms": "Arcane",
       "os": "",
       "role": "Ranged",
-      "status": "Casual",
+      "status": "Main",
       "altOf": "",
       "notes": ""
     },
@@ -370,7 +370,7 @@
       "name": "Romelex",
       "class": "Mage",
       "ms": "Arcane",
-      "os": "Destruction",
+      "os": "",
       "role": "Ranged",
       "status": "Casual",
       "altOf": "",
@@ -394,29 +394,29 @@
       "ms": "Restoration",
       "os": "",
       "role": "Healer",
-      "status": "Casual",
+      "status": "Main",
       "altOf": "",
       "notes": ""
     },
     {
       "id": 37,
       "name": "Oltakk",
-      "class": "Warrior",
-      "ms": "Fury",
+      "class": "Shaman",
+      "ms": "Enhancement",
       "os": "",
-      "role": "Melee",
+      "role": "Ranged",
       "status": "Casual",
       "altOf": "",
       "notes": ""
     },
     {
       "id": 38,
-      "name": "Clutchlack",
-      "class": "Rogue",
-      "ms": "Combat",
+      "name": "Clutchlock",
+      "class": "Warlock",
+      "ms": "Destruction",
       "os": "",
-      "role": "Melee",
-      "status": "Casual",
+      "role": "Ranged",
+      "status": "Main",
       "altOf": "",
       "notes": ""
     }
