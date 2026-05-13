@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-05-13T21:57:42.496Z",
+  "savedAt": "2026-05-13T22:17:03.190Z",
   "roster": [
     {
       "id": 1,
@@ -118,7 +118,7 @@
       "class": "Druid",
       "ms": "Feral",
       "os": "Feral",
-      "role": "Melee",
+      "role": "Tank",
       "status": "Main",
       "altOf": "",
       "notes": ""
@@ -283,7 +283,7 @@
       "class": "Priest",
       "ms": "Holy",
       "os": "",
-      "role": "Ranged",
+      "role": "Healer",
       "status": "Main",
       "altOf": "",
       "notes": ""
@@ -422,11 +422,39 @@
     }
   ],
   "groups": [
-    [],
-    [],
-    [],
-    [],
-    []
+    [
+      4,
+      6,
+      8,
+      26,
+      36
+    ],
+    [
+      11,
+      2,
+      3,
+      10
+    ],
+    [
+      33,
+      31,
+      16,
+      19,
+      12
+    ],
+    [
+      15,
+      20,
+      21,
+      24
+    ],
+    [
+      14,
+      13,
+      38,
+      18,
+      17
+    ]
   ],
   "attendance": [
     {
