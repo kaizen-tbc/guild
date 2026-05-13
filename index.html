@@ -1315,6 +1315,7 @@ function showTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
   event.currentTarget.classList.add('active');
   if (tab === 'overview') renderOverview();
+  if (tab === 'roster') renderRoster();
   if (tab === 'builder') renderBuilder();
   if (tab === 'attendance') renderAttendance();
 }
@@ -1886,14 +1887,18 @@ async function loadFromServer() {
     if (data.attendance) attendance = data.attendance;
     if (data.nextId) nextId = data.nextId;
     if (data.guildInfo) guildInfo = { ...guildInfo, ...data.guildInfo };
-    renderRoster();
-    renderOverview();
-    console.log('Kaizen data loaded from kaizen_data.json');
+    console.log('Kaizen data loaded successfully');
   } catch(err) {
-    console.warn('Could not load kaizen_data.json — showing default data.', err);
-    renderRoster();
-    renderOverview();
+    console.warn('Could not load kaizen_data.json:', err);
   }
+
+  // Render everything now that data is loaded
+  renderRoster();
+  renderOverview();
+  renderAttendance();
+  // Pre-render builder pool so it's ready when tab is clicked
+  const groupCount = getGroupCount();
+  renderBuilder();
 }
 
 loadFromServer();
