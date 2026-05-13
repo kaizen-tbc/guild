@@ -1877,7 +1877,8 @@ document.addEventListener('keydown', e => {
 // ======================================================
 async function loadFromServer() {
   try {
-    const res = await fetch('kaizen_data.json?v=' + Date.now());
+    const base = window.location.href.replace(/\/[^\/]*$/, '/');
+    const res = await fetch(base + 'kaizen_data.json?v=' + Date.now());
     if (!res.ok) throw new Error('No data file found');
     const data = await res.json();
     if (data.roster) roster = data.roster;
