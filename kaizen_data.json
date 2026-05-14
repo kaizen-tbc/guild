@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-05-14T18:02:26.352Z",
+  "savedAt": "2026-05-14T18:04:03.734Z",
   "roster": [
     {
       "id": 1,
@@ -457,20 +457,116 @@
   ],
   "attendance": [
     {
-      "iso": "2026-03-24",
-      "data": {}
+      "iso": "2026-05-18",
+      "data": {
+        "2": "present",
+        "3": "present",
+        "4": "present",
+        "8": "present",
+        "10": "present",
+        "11": "present",
+        "12": "present",
+        "13": "present",
+        "14": "present",
+        "15": "present",
+        "16": "present",
+        "17": "present",
+        "18": "present",
+        "19": "present",
+        "20": "present",
+        "21": "present",
+        "24": "present",
+        "26": "present",
+        "31": "present",
+        "33": "present",
+        "34": "present",
+        "36": "present",
+        "38": "present"
+      }
     },
     {
-      "iso": "2026-03-31",
-      "data": {}
+      "iso": "2026-05-25",
+      "data": {
+        "2": "present",
+        "3": "present",
+        "4": "present",
+        "8": "present",
+        "10": "present",
+        "11": "present",
+        "12": "present",
+        "13": "present",
+        "14": "present",
+        "15": "present",
+        "16": "present",
+        "17": "present",
+        "18": "present",
+        "19": "present",
+        "20": "present",
+        "21": "present",
+        "24": "present",
+        "26": "present",
+        "31": "present",
+        "33": "present",
+        "34": "present",
+        "36": "present",
+        "38": "present"
+      }
     },
     {
-      "iso": "2026-04-07",
-      "data": {}
+      "iso": "2026-06-01",
+      "data": {
+        "2": "present",
+        "3": "present",
+        "4": "present",
+        "8": "present",
+        "10": "present",
+        "11": "present",
+        "12": "present",
+        "13": "present",
+        "14": "present",
+        "15": "present",
+        "16": "present",
+        "17": "present",
+        "18": "present",
+        "19": "present",
+        "20": "present",
+        "21": "present",
+        "24": "present",
+        "26": "present",
+        "31": "present",
+        "33": "present",
+        "34": "present",
+        "36": "present",
+        "38": "present"
+      }
     },
     {
-      "iso": "2026-04-14",
-      "data": {}
+      "iso": "2026-06-08",
+      "data": {
+        "2": "present",
+        "3": "present",
+        "4": "present",
+        "8": "present",
+        "10": "present",
+        "11": "present",
+        "12": "present",
+        "13": "present",
+        "14": "present",
+        "15": "present",
+        "16": "present",
+        "17": "present",
+        "18": "present",
+        "19": "present",
+        "20": "present",
+        "21": "present",
+        "24": "present",
+        "26": "present",
+        "31": "present",
+        "33": "present",
+        "34": "present",
+        "36": "present",
+        "38": "present"
+      }
     }
   ],
   "nextId": 39,
