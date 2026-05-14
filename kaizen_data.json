@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-05-14T05:17:38.539Z",
+  "savedAt": "2026-05-14T05:26:50.954Z",
   "roster": [
     {
       "id": 1,
@@ -64,7 +64,7 @@
       "ms": "Holy",
       "os": "Holy",
       "role": "Healer",
-      "status": "Main",
+      "status": "Casual",
       "altOf": "",
       "notes": ""
     },
@@ -138,7 +138,7 @@
       "id": 13,
       "name": "Adili",
       "class": "Warlock",
-      "ms": "Demonology",
+      "ms": "Affliction",
       "os": "",
       "role": "Ranged",
       "status": "Main",
@@ -283,7 +283,7 @@
       "class": "Priest",
       "ms": "Holy",
       "os": "",
-      "role": "Ranged",
+      "role": "Healer",
       "status": "Main",
       "altOf": "",
       "notes": ""
@@ -424,37 +424,36 @@
   "groups": [
     [
       4,
-      6,
-      8,
       36,
-      10
+      26,
+      15,
+      17
     ],
     [
-      11,
       2,
       3,
-      12,
-      13
-    ],
-    [
-      14,
-      15,
-      16,
-      17,
-      18
-    ],
-    [
-      19,
-      20,
-      21,
-      24,
-      26
+      10
     ],
     [
       31,
       33,
+      18,
+      19,
+      12
+    ],
+    [
+      21,
+      24,
+      20,
+      11,
+      8
+    ],
+    [
+      13,
+      14,
+      38,
       34,
-      38
+      16
     ]
   ],
   "attendance": [
