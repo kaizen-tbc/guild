@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-05-14T05:16:46.877Z",
+  "savedAt": "2026-05-14T05:17:38.539Z",
   "roster": [
     {
       "id": 1,
@@ -118,7 +118,7 @@
       "class": "Druid",
       "ms": "Feral",
       "os": "Feral",
-      "role": "Melee",
+      "role": "Tank",
       "status": "Main",
       "altOf": "",
       "notes": ""
