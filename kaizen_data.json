@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "savedAt": "2026-05-13T22:17:03.190Z",
+  "savedAt": "2026-05-14T03:51:02.279Z",
   "roster": [
     {
       "id": 1,
       "name": "Bradpitiful",
       "class": "Warrior",
-      "ms": "Fury",
-      "os": "Protection",
+      "ms": "Protection",
+      "os": "Fury",
       "role": "Tank",
-      "status": "Alt",
-      "altOf": "Zabanya",
+      "status": "Main",
+      "altOf": "",
       "notes": ""
     },
     {
@@ -53,8 +53,8 @@
       "ms": "Restoration",
       "os": "Balance",
       "role": "Healer",
-      "status": "Alt",
-      "altOf": "Tilatia",
+      "status": "Main",
+      "altOf": "",
       "notes": ""
     },
     {
@@ -75,7 +75,7 @@
       "ms": "Holy",
       "os": "",
       "role": "Healer",
-      "status": "Casual",
+      "status": "Main",
       "altOf": "",
       "notes": ""
     },
@@ -94,11 +94,11 @@
       "id": 9,
       "name": "Depew",
       "class": "Shaman",
-      "ms": "Restoration",
-      "os": "Enhancement",
-      "role": "Healer",
-      "status": "Alt",
-      "altOf": "Vestuvian",
+      "ms": "Enhancement",
+      "os": "Restoration",
+      "role": "Melee",
+      "status": "Main",
+      "altOf": "",
       "notes": ""
     },
     {
@@ -118,7 +118,7 @@
       "class": "Druid",
       "ms": "Feral",
       "os": "Feral",
-      "role": "Tank",
+      "role": "Melee",
       "status": "Main",
       "altOf": "",
       "notes": ""
@@ -241,7 +241,7 @@
       "os": "Retribution",
       "role": "Tank",
       "status": "Alt",
-      "altOf": "Zabanya",
+      "altOf": "Bradpitiful",
       "notes": ""
     },
     {
@@ -252,7 +252,7 @@
       "os": "Protection",
       "role": "Melee",
       "status": "Alt",
-      "altOf": "Vestuvian",
+      "altOf": "Depew",
       "notes": ""
     },
     {
@@ -262,8 +262,8 @@
       "ms": "Beastmastery",
       "os": "",
       "role": "Ranged",
-      "status": "Main",
-      "altOf": "",
+      "status": "Alt",
+      "altOf": "Healkinz",
       "notes": ""
     },
     {
@@ -281,11 +281,11 @@
       "id": 26,
       "name": "Vestuvian",
       "class": "Priest",
-      "ms": "Holy",
+      "ms": "Shadow",
       "os": "",
-      "role": "Healer",
-      "status": "Main",
-      "altOf": "",
+      "role": "Ranged",
+      "status": "Alt",
+      "altOf": "Depew",
       "notes": ""
     },
     {
@@ -335,11 +335,11 @@
     {
       "id": 31,
       "name": "Muvrin",
-      "class": "Warlock",
-      "ms": "Destruction",
+      "class": "Warrior",
+      "ms": "Arms",
       "os": "",
-      "role": "Ranged",
-      "status": "Main",
+      "role": "Melee",
+      "status": "Casual",
       "altOf": "",
       "notes": ""
     },
@@ -361,7 +361,7 @@
       "ms": "Arcane",
       "os": "",
       "role": "Ranged",
-      "status": "Main",
+      "status": "Casual",
       "altOf": "",
       "notes": ""
     },
@@ -372,7 +372,7 @@
       "ms": "Arcane",
       "os": "",
       "role": "Ranged",
-      "status": "Casual",
+      "status": "Main",
       "altOf": "",
       "notes": ""
     },
@@ -394,146 +394,56 @@
       "ms": "Restoration",
       "os": "",
       "role": "Healer",
-      "status": "Main",
+      "status": "Casual",
       "altOf": "",
       "notes": ""
     },
     {
       "id": 37,
       "name": "Oltakk",
-      "class": "Shaman",
-      "ms": "Enhancement",
+      "class": "Warrior",
+      "ms": "Fury",
       "os": "",
-      "role": "Ranged",
+      "role": "Melee",
       "status": "Casual",
       "altOf": "",
       "notes": ""
     },
     {
       "id": 38,
-      "name": "Clutchlock",
-      "class": "Warlock",
-      "ms": "Destruction",
+      "name": "Clutchlack",
+      "class": "Rogue",
+      "ms": "Combat",
       "os": "",
-      "role": "Ranged",
-      "status": "Main",
+      "role": "Melee",
+      "status": "Casual",
       "altOf": "",
       "notes": ""
     }
   ],
   "groups": [
-    [
-      4,
-      6,
-      8,
-      26,
-      36
-    ],
-    [
-      11,
-      2,
-      3,
-      10
-    ],
-    [
-      33,
-      31,
-      16,
-      19,
-      12
-    ],
-    [
-      15,
-      20,
-      21,
-      24
-    ],
-    [
-      14,
-      13,
-      38,
-      18,
-      17
-    ]
+    [],
+    [],
+    [],
+    [],
+    []
   ],
   "attendance": [
     {
-      "iso": "2026-05-11",
-      "data": {
-        "1": "present",
-        "2": "present",
-        "3": "present",
-        "4": "present",
-        "5": "present",
-        "6": "present",
-        "7": "present",
-        "8": "present",
-        "9": "present",
-        "10": "present",
-        "11": "present",
-        "12": "present",
-        "13": "present",
-        "14": "present",
-        "15": "present",
-        "16": "present",
-        "17": "present",
-        "18": "present",
-        "19": "present",
-        "20": "present",
-        "21": "present"
-      }
+      "iso": "2026-03-24",
+      "data": {}
     },
     {
-      "iso": "2026-05-18",
-      "data": {
-        "1": "present",
-        "2": "present",
-        "3": "present",
-        "4": "present",
-        "5": "present",
-        "6": "present",
-        "7": "present",
-        "8": "present",
-        "9": "present",
-        "10": "present",
-        "11": "present",
-        "12": "present",
-        "13": "present",
-        "14": "present",
-        "15": "present",
-        "16": "present",
-        "17": "present",
-        "18": "present",
-        "19": "present",
-        "20": "present",
-        "21": "present"
-      }
+      "iso": "2026-03-31",
+      "data": {}
     },
     {
-      "iso": "2026-05-25",
-      "data": {
-        "1": "present",
-        "2": "present",
-        "3": "present",
-        "4": "present",
-        "5": "present",
-        "6": "present",
-        "7": "present",
-        "8": "present",
-        "9": "present",
-        "10": "present",
-        "11": "present",
-        "12": "present",
-        "13": "present",
-        "14": "present",
-        "15": "present",
-        "16": "present",
-        "17": "present",
-        "18": "present",
-        "19": "present",
-        "20": "present",
-        "21": "present"
-      }
+      "iso": "2026-04-07",
+      "data": {}
+    },
+    {
+      "iso": "2026-04-14",
+      "data": {}
     }
   ],
   "nextId": 39,
