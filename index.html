@@ -1340,6 +1340,7 @@ let sortAsc = true;
 // Groups: 5 groups of up to 5
 let groups = [[], [], [], [], []];
 let pugs = [];
+let nextPugId = -1;
 
 // Attendance: weeks array, each week = { label, data: {name: state} }
 let attendance = [];
@@ -1954,6 +1955,8 @@ async function loadFromServer() {
     if (data.attendance) attendance = data.attendance;
     if (data.nextId) nextId = data.nextId;
     if (data.guildInfo) guildInfo = { ...guildInfo, ...data.guildInfo };
+    if (data.pugs) pugs = data.pugs;
+    if (data.nextPugId) nextPugId = data.nextPugId;
     console.log('Kaizen data loaded successfully');
   } catch(err) {
     console.warn('Could not load kaizen_data.json:', err);
