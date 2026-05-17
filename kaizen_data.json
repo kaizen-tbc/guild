@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-05-17T03:42:09.328Z",
+  "savedAt": "2026-05-17T06:01:32.577Z",
   "roster": [
     {
       "id": 1,
@@ -425,33 +425,32 @@
     [
       4,
       -2,
-      -1
+      -1,
+      8
     ],
     [
       -4,
       3,
-      23,
-      8
+      23
     ],
     [
       31,
-      33,
-      18,
-      19,
+      38,
+      -3,
       12
     ],
     [
       21,
       24,
-      20,
       11,
       10
     ],
     [
-      38,
-      -3,
       34,
-      17
+      33,
+      18,
+      17,
+      19
     ]
   ],
   "attendance": [
@@ -632,7 +631,62 @@
       "status": "Main",
       "altOf": "",
       "notes": "PUG"
+    },
+    {
+      "id": -5,
+      "name": "RestoDruid",
+      "class": "Druid",
+      "ms": "Restoration",
+      "os": "",
+      "role": "Ranged",
+      "status": "Main",
+      "altOf": "",
+      "notes": "PUG"
+    },
+    {
+      "id": -6,
+      "name": "Armswarrior",
+      "class": "Warrior",
+      "ms": "Arms",
+      "os": "",
+      "role": "Melee",
+      "status": "Main",
+      "altOf": "",
+      "notes": "PUG"
+    },
+    {
+      "id": -8,
+      "name": "Hunter",
+      "class": "Hunter",
+      "ms": "Survival",
+      "os": "",
+      "role": "Ranged",
+      "status": "Main",
+      "altOf": "",
+      "notes": "PUG"
+    },
+    {
+      "id": -9,
+      "name": "Enhancesham",
+      "class": "Shaman",
+      "ms": "Enhancement",
+      "os": "",
+      "role": "Ranged",
+      "status": "Main",
+      "altOf": "",
+      "notes": "PUG"
+    },
+    {
+      "id": -10,
+      "name": "Boomie",
+      "class": "Druid",
+      "ms": "Balance",
+      "os": "",
+      "role": "Ranged",
+      "status": "Main",
+      "altOf": "",
+      "notes": "PUG"
     }
   ],
-  "nextPugId": -1
+  "nextPugId": -11
 }
