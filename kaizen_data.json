@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-05-16T22:36:10.774Z",
+  "savedAt": "2026-05-17T03:42:09.328Z",
   "roster": [
     {
       "id": 1,
@@ -384,17 +384,6 @@
       "os": "",
       "role": "Tank",
       "status": "Casual",
-      "altOf": "",
-      "notes": ""
-    },
-    {
-      "id": 36,
-      "name": "Sugarmoose",
-      "class": "Druid",
-      "ms": "Restoration",
-      "os": "",
-      "role": "Healer",
-      "status": "Main",
       "altOf": "",
       "notes": ""
     },
