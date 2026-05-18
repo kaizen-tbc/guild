@@ -1441,17 +1441,28 @@ const ATT_CLASS = { present: 'present', absent: 'absent', excused: 'excused' };
 // ======================================================
 // TAB NAVIGATION
 // ======================================================
-function showTab(tab) {
+function showTab(tab, updateHash = true) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  event.currentTarget.classList.add('active');
+  // Highlight correct nav button without needing event
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if ((b.getAttribute('onclick') || '').includes("'" + tab + "'")) b.classList.add('active');
+  });
+  if (updateHash) window.location.hash = tab;
   if (tab === 'overview') renderOverview();
   if (tab === 'strats') renderStrats();
   if (tab === 'roster') renderRoster();
   if (tab === 'builder') renderBuilder();
   if (tab === 'attendance') renderAttendance();
 }
+
+// Handle direct hash links and back/forward navigation
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace('#', '');
+  const valid = ['overview', 'roster', 'builder', 'attendance', 'strats'];
+  if (valid.includes(hash)) showTab(hash, false);
+});
 
 // ======================================================
 // OVERVIEW
@@ -2089,6 +2100,13 @@ function setActiveStat(id) {
   renderStrats();
 }
 
+// Handle browser back/forward and direct hash links
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace('#', '');
+  const valid = ['overview', 'roster', 'builder', 'attendance', 'strats'];
+  if (hash && valid.includes(hash)) showTab(hash, false);
+});
+
 // ======================================================
 // KEYBOARD
 // ======================================================
@@ -2123,10 +2141,23 @@ async function loadFromServer() {
   renderRoster();
   renderOverview();
   renderAttendance();
-  // Pre-render builder pool so it's ready when tab is clicked
   const groupCount = getGroupCount();
   renderBuilder();
+  // Jump to hash tab after data loads
+  const hash = window.location.hash.replace('#', '');
+  const valid = ['overview', 'roster', 'builder', 'attendance', 'strats'];
+  if (hash && valid.includes(hash) && hash !== 'overview') showTab(hash, false);
 }
+
+// On load, check URL hash and open matching tab
+(function() {
+  const hash = window.location.hash.replace('#', '');
+  const valid = ['overview', 'roster', 'builder', 'attendance', 'strats'];
+  if (hash && valid.includes(hash)) {
+    // Will be called after loadFromServer populates data
+    window._initialTab = hash;
+  }
+})();
 
 loadFromServer();
 </script>
