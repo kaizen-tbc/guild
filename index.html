@@ -807,6 +807,74 @@ tr:last-child td { border-bottom: none; }
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 
+/* ===== STRATS ===== */
+.strat-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-bright);
+  padding-bottom: 0;
+}
+.strat-tab-btn {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-mid);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.strat-tab-btn:hover { color: var(--text-bright); }
+.strat-tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.strat-image-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  text-align: center;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.strat-image-wrap img {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 3px;
+  object-fit: contain;
+}
+
+.strat-raid-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.strat-raid-pill {
+  padding: 6px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: 3px;
+  color: var(--text-mid);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.strat-raid-pill:hover:not(:disabled) { color: var(--text-bright); border-color: var(--gold-dim); }
+.strat-raid-pill.active { color: var(--gold); border-color: var(--gold); background: rgba(201,162,39,0.08); }
+.strat-raid-pill.empty { opacity: 0.35; cursor: not-allowed; }
+
 /* ===== TOOL CARDS ===== */
 .tool-card {
   display: flex;
@@ -1036,6 +1104,7 @@ a[href] > div > div[style*="line-height:1.6"] {
     <button class="nav-btn" onclick="showTab('roster')">Roster</button>
     <button class="nav-btn" onclick="showTab('builder')">Group Builder</button>
     <button class="nav-btn" onclick="showTab('attendance')">Attendance</button>
+    <button class="nav-btn" onclick="showTab('strats')">Strats</button>
   </nav>
   <div class="header-right">
     <span class="raid-tier-badge">T4 · T5 · T6</span>
@@ -1223,6 +1292,18 @@ a[href] > div > div[style*="line-height:1.6"] {
   </div>
 </div>
 
+
+<!-- ==================== STRATS TAB ==================== -->
+<div class="tab-panel" id="tab-strats">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Strats</div>
+      <div class="section-subtitle">Encounter diagrams and positioning for progression content</div>
+    </div>
+  </div>
+  <div id="strat-list"></div>
+</div>
+
 </main>
 
 
@@ -1339,6 +1420,8 @@ let sortAsc = true;
 
 // Groups: 5 groups of up to 5
 let groups = [[], [], [], [], []];
+let strats = [];
+let nextStratId = 1;
 let pugs = [];
 let nextPugId = -1;
 
@@ -1364,6 +1447,7 @@ function showTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
   event.currentTarget.classList.add('active');
   if (tab === 'overview') renderOverview();
+  if (tab === 'strats') renderStrats();
   if (tab === 'roster') renderRoster();
   if (tab === 'builder') renderBuilder();
   if (tab === 'attendance') renderAttendance();
@@ -1935,6 +2019,77 @@ function renderAttendance() {
 
 
 // ======================================================
+// STRATS (read-only)
+// ======================================================
+let activeStratId = null;
+let activeRaid = null;
+
+const RAID_INSTANCES = [
+  'Karazhan',
+  "Gruul's Lair & Magtheridon's Lair",
+  'Serpentshrine Cavern',
+  'The Eye',
+  'Battle for Mount Hyjal',
+  'Black Temple',
+  'Sunwell Plateau',
+];
+
+function renderStrats() {
+  const list = document.getElementById('strat-list');
+  if (!list) return;
+
+  if (strats.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No strats posted yet — check back before raid.</div></div>`;
+    return;
+  }
+
+  const raidsWithStrats = RAID_INSTANCES.filter(r => strats.some(s => s.raid === r));
+  if (!activeRaid || !raidsWithStrats.includes(activeRaid)) {
+    activeRaid = raidsWithStrats[0] || null;
+  }
+
+  const raidPills = RAID_INSTANCES.map(r => {
+    const hasStrats = strats.some(s => s.raid === r);
+    const isActive = r === activeRaid;
+    return `<button
+      class="strat-raid-pill ${isActive ? 'active' : ''} ${!hasStrats ? 'empty' : ''}"
+      onclick="${hasStrats ? `setActiveRaid('${r.replace(/'/g, "\'")}')` : ''}"
+      ${!hasStrats ? 'disabled' : ''}
+    >${r}${hasStrats ? ` <span style="font-size:10px;opacity:0.6;">(${strats.filter(s=>s.raid===r).length})</span>` : ''}</button>`;
+  }).join('');
+
+  const raidStrats = strats.filter(s => s.raid === activeRaid);
+  if (!activeStratId || !raidStrats.find(s => s.id === activeStratId)) {
+    activeStratId = raidStrats.length > 0 ? raidStrats[0].id : null;
+  }
+  const active = strats.find(s => s.id === activeStratId);
+
+  const tabs = raidStrats.map(s => `
+    <button class="strat-tab-btn ${s.id === activeStratId ? 'active' : ''}" onclick="setActiveStat(${s.id})">
+      ${s.name}
+    </button>`).join('');
+
+  list.innerHTML = `
+    <div class="strat-raid-pills">${raidPills}</div>
+    ${raidStrats.length > 0 ? `
+      <div class="strat-tabs">${tabs}</div>
+      <div class="strat-image-wrap">
+        ${active ? `<img src="${active.image}" alt="${active.name}">` : ''}
+      </div>` : ''}`;
+}
+
+function setActiveRaid(raid) {
+  activeRaid = raid;
+  activeStratId = null;
+  renderStrats();
+}
+
+function setActiveStat(id) {
+  activeStratId = id;
+  renderStrats();
+}
+
+// ======================================================
 // KEYBOARD
 // ======================================================
 document.addEventListener('keydown', e => {
@@ -1957,6 +2112,8 @@ async function loadFromServer() {
     if (data.guildInfo) guildInfo = { ...guildInfo, ...data.guildInfo };
     if (data.pugs) pugs = data.pugs;
     if (data.nextPugId) nextPugId = data.nextPugId;
+    if (data.strats) strats = data.strats;
+    if (data.nextStratId) nextStratId = data.nextStratId;
     console.log('Kaizen data loaded successfully');
   } catch(err) {
     console.warn('Could not load kaizen_data.json:', err);
