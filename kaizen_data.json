@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-05-28T03:02:23.500Z",
+  "savedAt": "2026-05-30T00:00:42.082Z",
   "roster": [
     {
       "id": 1,
@@ -496,6 +496,17 @@
       "status": "Casual",
       "altOf": "",
       "notes": ""
+    },
+    {
+      "id": 48,
+      "name": "Bootboot",
+      "class": "Druid",
+      "ms": "Restoration",
+      "os": "",
+      "role": "Healer",
+      "status": "Main",
+      "altOf": "",
+      "notes": ""
     }
   ],
   "groups": [
@@ -636,7 +647,7 @@
       }
     }
   ],
-  "nextId": 48,
+  "nextId": 49,
   "guildInfo": {
     "about": "Kaizen is a chill but serious Horde raiding guild pushing into 25-man progression content on TBC Classic. We're building a solid, consistent roster of players who show up prepared, respect each other's time, and want to actually clear content — without the toxicity. If that sounds like you, come hang.",
     "raidSchedule": [
