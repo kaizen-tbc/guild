@@ -1677,13 +1677,29 @@ a[href] > div > div[style*="line-height:1.6"] {
 
 <!-- ==================== ASSIGN PICKER MODAL ==================== -->
 <div class="modal-overlay" id="assign-picker-overlay" onclick="if(event.target===this)closeAssignPicker()">
-  <div class="modal" style="width:400px;">
+  <div class="modal" style="width:440px;">
     <div class="modal-header">
       <div class="modal-title" id="assign-picker-title">Assign Player</div>
       <button class="modal-close" onclick="closeAssignPicker()">✕</button>
     </div>
     <div class="modal-body" style="padding:12px;">
-      <input type="text" class="filter-input" id="assign-picker-search" placeholder="Search name..." oninput="renderAssignPicker()" style="width:100%;margin-bottom:10px;">
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <input type="text" class="filter-input" id="assign-picker-search" placeholder="Search name..." oninput="renderAssignPicker()" style="flex:1;">
+        <select class="filter-select" id="assign-picker-status" onchange="renderAssignPicker()" style="width:110px;">
+          <option value="">All</option>
+          <option value="Main">Mains</option>
+          <option value="Alt">Alts</option>
+          <option value="Casual">Casuals</option>
+          <option value="Pug">Pugs</option>
+        </select>
+        <select class="filter-select" id="assign-picker-role" onchange="renderAssignPicker()" style="width:100px;">
+          <option value="">All Roles</option>
+          <option>Tank</option>
+          <option>Healer</option>
+          <option>Melee</option>
+          <option>Ranged</option>
+        </select>
+      </div>
       <div id="assign-picker-list" style="display:flex;flex-direction:column;gap:4px;max-height:320px;overflow-y:auto;"></div>
     </div>
   </div>
@@ -3066,7 +3082,7 @@ function renderStrats() {
   const sid = active ? active.id : 0;
 
   // All players available for slots
-  const allPlayers = [...roster, ...pugs];
+  const allPlayers = [...getActiveRaiders(), ...pugs];
   const assignedIds = new Set(Object.values(assigns).filter(v => typeof v === 'number'));
 
   // Render a player slot
@@ -3303,7 +3319,19 @@ function renderAssignPicker() {
   const assigns = strat ? (strat.assigns || {}) : {};
   const assignedIds = new Set(Object.values(assigns).filter(v => typeof v === 'number'));
 
-  let players = [...getActiveRaiders(), ...pugs];
+  const statusFilter = document.getElementById('assign-picker-status').value;
+  const roleFilter = document.getElementById('assign-picker-role').value;
+
+  // Build full player list: all roster + pugs
+  let players = [
+    ...roster.map(p => ({ ...p, _isPug: false })),
+    ...pugs.map(p => ({ ...p, _isPug: true, status: 'Pug' })),
+  ];
+
+  // Apply filters
+  if (statusFilter === 'Pug') players = players.filter(p => p._isPug);
+  else if (statusFilter) players = players.filter(p => !p._isPug && p.status === statusFilter);
+  if (roleFilter) players = players.filter(p => p.role === roleFilter);
   if (search) players = players.filter(p => p.name.toLowerCase().includes(search));
 
   const list = document.getElementById('assign-picker-list');
@@ -3314,6 +3342,8 @@ function renderAssignPicker() {
 
   list.innerHTML = players.map(p => {
     const cc = classColor(p.class);
+    const statusLabel = p._isPug ? 'PUG' : p.status !== 'Main' ? p.status : '';
+    const statusColor = p._isPug ? 'var(--gold)' : p.status === 'Alt' ? 'var(--teal)' : 'var(--text-dim)';
     return `<div onclick="pickAssign(${p.id})"
       style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:3px;
              border:1px solid var(--border);background:var(--bg-card);cursor:pointer;
@@ -3323,7 +3353,7 @@ function renderAssignPicker() {
       <span class="class-dot" style="background:var(--${cc});width:9px;height:9px;flex-shrink:0;border-radius:50%;"></span>
       <span class="class-${cc}" style="font-weight:600;font-size:14px;">${p.name}</span>
       <span style="font-size:12px;color:var(--text-dim);margin-left:4px;">${p.ms} ${p.class}</span>
-      ${p.id < 0 ? '<span style="font-size:10px;color:var(--gold);margin-left:auto;">PUG</span>' : ''}
+      ${statusLabel ? `<span style="font-size:10px;color:${statusColor};margin-left:auto;font-weight:700;">${statusLabel}</span>` : ''}
     </div>`;
   }).join('');
 }
