@@ -3581,6 +3581,8 @@ async function initFromJson() {
         nextPugId = Math.min(...pugs.map(p => p.id)) - 1;
       }
     }
+    if (data.strats) strats = data.strats;
+    if (data.nextStratId) nextStratId = data.nextStratId;
     showToast('📂 Loaded kaizen_data.json automatically.');
     console.log('Auto-loaded kaizen_data.json');
   } catch(err) {
