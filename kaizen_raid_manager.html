@@ -3591,14 +3591,7 @@ async function initFromJson() {
   renderRoster();
   renderOverview();
   renderAttendance();
-  // Render strats after a delay to let browser finish parsing large JSON
-  setTimeout(() => {
-    renderStrats();
-    // If strats tab is active, re-render to make sure it shows
-    if (document.getElementById('tab-strats')?.classList.contains('active')) {
-      renderStrats();
-    }
-  }, 500);
+  renderStrats();
 }
 
 initFromJson();
