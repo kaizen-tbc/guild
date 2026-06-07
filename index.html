@@ -2127,11 +2127,12 @@ function renderStrats() {
   const hasMd = assigns.md1a_pid || assigns.md2a_pid;
   const hasAssigns = hasTanks || hasHeal || hasMd || assigns.lust_timing || assigns.notes;
 
+  const sid = active ? active.id : 0;
   const assignsPanel = (active && hasAssigns) ? `
     <div class="assigns-panel">
       ${hasTanks ? `
-      <div class="assigns-section">
-        <div class="assigns-section-header" onclick="toggleAssignSection(${active.id}, 'tanks')">
+      <div class="assigns-section ${isCollapsed(${sid}, 'tanks') ? 'collapsed' : ''}">
+        <div class="assigns-section-header" onclick="toggleAssignSection(${sid}, 'tanks')">
           <span>🛡 Tanks</span><span class="assigns-collapse-icon">▼</span>
         </div>
         <div class="assigns-section-body">
@@ -2141,8 +2142,8 @@ function renderStrats() {
         </div>
       </div>` : ''}
       ${hasHeal ? `
-      <div class="assigns-section">
-        <div class="assigns-section-header" onclick="toggleAssignSection(${active.id}, 'heals')">
+      <div class="assigns-section ${isCollapsed(${sid}, 'heals') ? 'collapsed' : ''}">
+        <div class="assigns-section-header" onclick="toggleAssignSection(${sid}, 'heals')">
           <span>✚ Healer Assigns</span><span class="assigns-collapse-icon">▼</span>
         </div>
         <div class="assigns-section-body">
@@ -2153,8 +2154,8 @@ function renderStrats() {
         </div>
       </div>` : ''}
       ${hasMd ? `
-      <div class="assigns-section">
-        <div class="assigns-section-header" onclick="toggleAssignSection(${active.id}, 'md')">
+      <div class="assigns-section ${isCollapsed(${sid}, 'md') ? 'collapsed' : ''}">
+        <div class="assigns-section-header" onclick="toggleAssignSection(${sid}, 'md')">
           <span>🏹 Misdirection</span><span class="assigns-collapse-icon">▼</span>
         </div>
         <div class="assigns-section-body">
@@ -2163,8 +2164,8 @@ function renderStrats() {
         </div>
       </div>` : ''}
       ${assigns.lust_timing ? `
-      <div class="assigns-section">
-        <div class="assigns-section-header" onclick="toggleAssignSection(${active.id}, 'lust')">
+      <div class="assigns-section ${isCollapsed(${sid}, 'lust') ? 'collapsed' : ''}">
+        <div class="assigns-section-header" onclick="toggleAssignSection(${sid}, 'lust')">
           <span>🔊 Lust / Drums</span><span class="assigns-collapse-icon">▼</span>
         </div>
         <div class="assigns-section-body">
@@ -2173,8 +2174,8 @@ function renderStrats() {
         </div>
       </div>` : ''}
       ${assigns.notes ? `
-      <div class="assigns-section">
-        <div class="assigns-section-header" onclick="toggleAssignSection(${active.id}, 'notes')">
+      <div class="assigns-section ${isCollapsed(${sid}, 'notes') ? 'collapsed' : ''}">
+        <div class="assigns-section-header" onclick="toggleAssignSection(${sid}, 'notes')">
           <span>📋 Strategy Notes</span><span class="assigns-collapse-icon">▼</span>
         </div>
         <div class="assigns-section-body">
