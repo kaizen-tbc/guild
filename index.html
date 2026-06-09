@@ -2166,14 +2166,15 @@ function renderStrats() {
 
   const panelSections = sections.map(renderSecRO).filter(Boolean).join('');
 
-  const expandCollapseBar = (active && panelSections) ? `
-    <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:6px;">
-      <button onclick="expandAllSections(${sid})" style="background:none;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;padding:0;" onmouseover="this.style.color='var(--text-bright)'" onmouseout="this.style.color='var(--text-dim)'">Expand All</button>
-      <span style="color:var(--border-bright);font-size:11px;">|</span>
-      <button onclick="collapseAllSections(${sid})" style="background:none;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;padding:0;" onmouseover="this.style.color='var(--text-bright)'" onmouseout="this.style.color='var(--text-dim)'">Collapse All</button>
+  const assignsPanel = (active && panelSections) ? `
+    <div style="display:flex;flex-direction:column;min-width:260px;max-width:300px;flex-shrink:0;">
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:6px;">
+        <button onclick="expandAllSections(${sid})" style="background:none;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;padding:0;" onmouseover="this.style.color='var(--text-bright)'" onmouseout="this.style.color='var(--text-dim)'">Expand All</button>
+        <span style="color:var(--border-bright);font-size:11px;">|</span>
+        <button onclick="collapseAllSections(${sid})" style="background:none;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;padding:0;" onmouseover="this.style.color='var(--text-bright)'" onmouseout="this.style.color='var(--text-dim)'">Collapse All</button>
+      </div>
+      <div class="assigns-panel">${panelSections}</div>
     </div>` : '';
-
-  const assignsPanel = (active && panelSections) ? `${expandCollapseBar}<div class="assigns-panel">${panelSections}</div>` : '';
 
   list.innerHTML = `
     <div class="strat-raid-pills">${raidPills}</div>
