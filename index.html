@@ -807,6 +807,16 @@ tr:last-child td { border-bottom: none; }
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 
+/* ===== ASSIGNS READ-ONLY ===== */
+.assigns-panel { display:flex;flex-direction:column;gap:10px;min-width:260px;max-width:300px;flex-shrink:0; }
+.assigns-section { background:var(--bg-panel);border:1px solid var(--border);border-radius:4px;overflow:hidden; }
+.assigns-section-header { padding:7px 12px;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none; }
+.assigns-section-header:hover { background:rgba(255,255,255,0.05); }
+.assigns-collapse-icon { font-size:10px;color:var(--text-dim);transition:transform 0.15s;flex-shrink:0; }
+.assigns-section.collapsed .assigns-collapse-icon { transform:rotate(-90deg); }
+.assigns-section.collapsed .assigns-section-body { display:none; }
+.assigns-section-body {}
+
 /* ===== ASSIGNS COLLAPSE ===== */
 .assigns-section-header { display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none; }
 .assigns-section-header:hover { background:rgba(255,255,255,0.05); }
@@ -2111,73 +2121,67 @@ function renderStrats() {
     </button>`).join('');
 
   // Build read-only assigns panel
-  const assigns = active ? (active.assigns || {}) : {};
-  const allRoPlayers = [...roster, ...(typeof pugs !== 'undefined' ? pugs : [])];
+    // Dynamic sections read-only render
+  const sid = active ? active.id : 0;
+  const sections = active ? (active.sections || []) : [];
+  const allRoPlayers = [...roster, ...pugs, ...guildies];
 
-  function roPlayer(pid) {
+  function roPlayerHtml(pid) {
     if (!pid) return '<span style="color:var(--text-dim);font-size:11px;">—</span>';
     const p = allRoPlayers.find(x => x.id === pid);
     if (!p) return '<span style="color:var(--text-dim);font-size:11px;">—</span>';
     const cc = classColor(p.class);
-    return `<span class="class-dot" style="background:var(--${cc});width:7px;height:7px;display:inline-block;border-radius:50%;margin-right:4px;"></span><span class="class-${cc}" style="font-size:12px;font-weight:600;">${p.name}</span>`;
+    return `<span class="class-dot" style="background:var(--${cc});width:7px;height:7px;display:inline-block;border-radius:50%;margin-right:4px;flex-shrink:0;"></span><span class="class-${cc}" style="font-size:12px;font-weight:600;">${p.name}</span>`;
   }
 
-  const hasTanks = assigns.tank1_pid || assigns.tank2_pid || assigns.tank3_pid;
-  const hasHeal = assigns.heal1a_pid || assigns.heal2a_pid || assigns.heal3a_pid || assigns.heal4a_pid;
-  const hasMd = assigns.md1a_pid || assigns.md2a_pid;
-  const hasAssigns = hasTanks || hasHeal || hasMd || assigns.lust_timing || assigns.notes;
+  function renderRowRO(row) {
+    const { typeA, valueA, arrow, typeB, valueB } = row;
+    if (typeA === 'notes') {
+      if (!valueA) return '';
+      return `<div style="padding:8px 10px;color:var(--text-mid);font-size:11px;line-height:1.5;white-space:pre-wrap;">${valueA}</div>`;
+    }
+    const cellA = typeA === 'player' ? roPlayerHtml(valueA) : `<span style="color:var(--text-dim);font-size:11px;min-width:60px;">${valueA||''}</span>`;
+    const arrowHtml = arrow ? '<span style="color:var(--text-dim);font-size:13px;flex-shrink:0;">→</span>' : '';
+    const cellB = typeB === 'player' ? roPlayerHtml(valueB) : (typeB === 'text' ? `<span style="color:var(--text-bright);font-size:12px;">${valueB||''}</span>` : '');
+    const hasContent = (typeA === 'player' && valueA) || (typeA === 'text' && valueA) || (typeB === 'player' && valueB) || (typeB === 'text' && valueB);
+    if (!hasContent) return '';
+    return `<div style="display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);padding:5px 8px;min-height:30px;">
+      ${cellA}
+      ${arrowHtml}
+      ${cellB}
+    </div>`;
+  }
 
-  const sid = active ? active.id : 0;
-
-  function makeSection(key, label, bodyHtml) {
-    const collapsed = isCollapsed(sid, key) ? 'collapsed' : '';
+  function renderSecRO(sec) {
+    const rowsHtml = (sec.rows || []).map(renderRowRO).filter(Boolean).join('');
+    if (!rowsHtml) return '';
+    const collapsed = isCollapsed(sid, 'sec-' + sec.id) ? 'collapsed' : '';
     return `<div class="assigns-section ${collapsed}">
-        <div class="assigns-section-header" onclick="toggleAssignSection(${sid}, '${key}')">
-          <span>${label}</span><span class="assigns-collapse-icon">▼</span>
-        </div>
-        <div class="assigns-section-body">${bodyHtml}</div>
-      </div>`;
+      <div class="assigns-section-header" onclick="toggleAssignSection(${sid},'sec-${sec.id}')">
+        <span>${sec.label}</span><span class="assigns-collapse-icon">▼</span>
+      </div>
+      <div class="assigns-section-body">${rowsHtml}</div>
+    </div>`;
   }
 
-  const tankRows = [
-    assigns.tank1_pid ? `<div class="assigns-tank-row"><div class="assigns-role-label">${assigns.tank1_role||'Tank'}</div><div class="assigns-player-ro">${roPlayer(assigns.tank1_pid)}</div></div>` : '',
-    assigns.tank2_pid ? `<div class="assigns-tank-row"><div class="assigns-role-label">${assigns.tank2_role||'OT'}</div><div class="assigns-player-ro">${roPlayer(assigns.tank2_pid)}</div></div>` : '',
-    assigns.tank3_pid ? `<div class="assigns-tank-row"><div class="assigns-role-label">${assigns.tank3_role||'OT2'}</div><div class="assigns-player-ro">${roPlayer(assigns.tank3_pid)}</div></div>` : '',
-  ].filter(Boolean).join('');
+  const panelSections = sections.map(renderSecRO).filter(Boolean).join('');
 
-  const healRows = [
-    assigns.heal1a_pid ? `<div class="assigns-arrow-row"><div class="assigns-player-ro">${roPlayer(assigns.heal1a_pid)}</div><span class="assigns-arrow">→</span><div class="assigns-player-ro">${roPlayer(assigns.heal1b_pid)}</div></div>` : '',
-    assigns.heal2a_pid ? `<div class="assigns-arrow-row"><div class="assigns-player-ro">${roPlayer(assigns.heal2a_pid)}</div><span class="assigns-arrow">→</span><div class="assigns-player-ro">${roPlayer(assigns.heal2b_pid)}</div></div>` : '',
-    assigns.heal3a_pid ? `<div class="assigns-arrow-row"><div class="assigns-player-ro">${roPlayer(assigns.heal3a_pid)}</div><span class="assigns-arrow">→</span><div class="assigns-player-ro">${roPlayer(assigns.heal3b_pid)}</div></div>` : '',
-    assigns.heal4a_pid ? `<div class="assigns-arrow-row"><div class="assigns-player-ro">${roPlayer(assigns.heal4a_pid)}</div><span class="assigns-arrow">→</span><div class="assigns-player-ro">${roPlayer(assigns.heal4b_pid)}</div></div>` : '',
-  ].filter(Boolean).join('');
+  const expandCollapseBar = (active && panelSections) ? `
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:6px;">
+      <button onclick="expandAllSections(${sid})" style="background:none;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;padding:0;" onmouseover="this.style.color='var(--text-bright)'" onmouseout="this.style.color='var(--text-dim)'">Expand All</button>
+      <span style="color:var(--border-bright);font-size:11px;">|</span>
+      <button onclick="collapseAllSections(${sid})" style="background:none;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;padding:0;" onmouseover="this.style.color='var(--text-bright)'" onmouseout="this.style.color='var(--text-dim)'">Collapse All</button>
+    </div>` : '';
 
-  const mdRows = [
-    assigns.md1a_pid ? `<div class="assigns-arrow-row"><div class="assigns-player-ro">${roPlayer(assigns.md1a_pid)}</div><span class="assigns-arrow">→</span><div class="assigns-player-ro">${roPlayer(assigns.md1b_pid)}</div></div>` : '',
-    assigns.md2a_pid ? `<div class="assigns-arrow-row"><div class="assigns-player-ro">${roPlayer(assigns.md2a_pid)}</div><span class="assigns-arrow">→</span><div class="assigns-player-ro">${roPlayer(assigns.md2b_pid)}</div></div>` : '',
-  ].filter(Boolean).join('');
-
-  const lustRows = assigns.lust_timing ? `
-    <div class="assigns-text-field"><div class="assigns-text-label">Timing</div><div class="assigns-text-value">${assigns.lust_timing}</div></div>
-    ${assigns.lust_notes ? `<div class="assigns-text-field"><div class="assigns-text-label">Notes</div><div class="assigns-text-value">${assigns.lust_notes}</div></div>` : ''}` : '';
-
-  const panelSections = [
-    hasTanks && tankRows ? makeSection('tanks', '🛡 Tanks', tankRows) : '',
-    hasHeal && healRows ? makeSection('heals', '✚ Healer Assigns', healRows) : '',
-    hasMd && mdRows ? makeSection('md', '🏹 Misdirection', mdRows) : '',
-    assigns.lust_timing ? makeSection('lust', '🔊 Lust / Drums', lustRows) : '',
-    assigns.notes ? makeSection('notes', '📋 Strategy Notes', `<div class="assigns-notes-ro">${assigns.notes}</div>`) : '',
-  ].filter(Boolean).join('');
-
-  const assignsPanel = (active && hasAssigns && panelSections) ? `<div class="assigns-panel">${panelSections}</div>` : '';
+  const assignsPanel = (active && panelSections) ? `${expandCollapseBar}<div class="assigns-panel">${panelSections}</div>` : '';
 
   list.innerHTML = `
     <div class="strat-raid-pills">${raidPills}</div>
     ${raidStrats.length > 0 ? `
       <div class="strat-tabs">${tabs}</div>
-      <div class="strat-content-wrap">
-        <div class="strat-image-wrap">
-          ${active ? `<img src="${active.image}" alt="${active.name}">` : ''}
+      <div style="display:flex;gap:16px;align-items:flex-start;">
+        <div style="flex:1;min-width:0;">
+          ${active ? `<img src="${active.image}" alt="${active.name}" style="max-width:100%;max-height:70vh;border-radius:3px;object-fit:contain;">` : ''}
         </div>
         ${assignsPanel}
       </div>` : ''}`;
