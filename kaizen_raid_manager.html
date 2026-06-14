@@ -3263,9 +3263,15 @@ function renderStrats() {
   }).join('');
 
   // ── Dynamic assigns panel ─────────────────────────────────
+  function resolveImg(img) {
+    // If it's a path (not base64), make it relative to the page
+    if (img && !img.startsWith('data:')) return img;
+    return img;
+  }
+
   const imageArea = active ? `
     <div class="strat-image-wrap" style="position:relative;">
-      <img src="${active.image}" alt="${active.name}" style="max-width:100%;max-height:70vh;border-radius:3px;object-fit:contain;">
+      <img src="${resolveImg(active.image)}" alt="${active.name}" style="max-width:100%;max-height:70vh;border-radius:3px;object-fit:contain;">
       <div style="position:absolute;top:10px;right:10px;display:flex;gap:6px;">
         <label class="btn btn-small" style="cursor:pointer;font-size:11px;" title="Replace image">
           🔄 Replace Image
@@ -3515,9 +3521,12 @@ function closeStratUpload() {
   document.getElementById('strat-upload-area').style.display = 'none';
 }
 
+let _pendingStratFile = null; // store file reference for upload on save
+
 function previewStrat(event) {
   const file = event.target.files[0];
   if (!file) return;
+  _pendingStratFile = file;
   const reader = new FileReader();
   reader.onload = e => {
     document.getElementById('strat-preview-img').src = e.target.result;
@@ -3530,16 +3539,56 @@ function previewStrat(event) {
   reader.readAsDataURL(file);
 }
 
-function saveStrat() {
+async function saveStrat() {
   const name = document.getElementById('strat-name-input').value.trim();
   const raid = document.getElementById('strat-raid-input').value;
-  const img = document.getElementById('strat-preview-img').src;
+  const imgEl = document.getElementById('strat-preview-img');
   if (!name) { document.getElementById('strat-name-input').focus(); return; }
   if (!raid) { showToast('Please select a raid instance.', true); return; }
-  if (!img || img === window.location.href) { showToast('Please choose an image first.', true); return; }
-  strats.push({ id: nextStratId++, name, raid, image: img, sections: defaultSections() });
+  if (!imgEl.src || imgEl.src === window.location.href) { showToast('Please choose an image first.', true); return; }
+
+  const cfg = getGHConfig();
+  let imagePath = imgEl.src; // fallback to base64 if no token
+
+  if (cfg.token && _pendingStratFile) {
+    showToast('⬆ Uploading image...');
+    try {
+      const filename = _pendingStratFile.name;
+      const path = `strats/${filename}`;
+      const arrayBuf = await _pendingStratFile.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuf);
+      let binary = '';
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      const encoded = btoa(binary);
+
+      const apiUrl = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/${path}`;
+      const headers = {
+        'Authorization': `token ${cfg.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+      };
+
+      let sha = null;
+      const getRes = await fetch(apiUrl, { headers });
+      if (getRes.ok) sha = (await getRes.json()).sha;
+
+      const body = { message: `strat image: ${filename}`, content: encoded };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(body) });
+      if (!putRes.ok) throw new Error('Image upload failed');
+
+      imagePath = path;
+      showToast(`✓ Image uploaded: ${filename}`);
+    } catch(err) {
+      showToast(`Image upload failed, saving locally: ${err.message}`, true);
+    }
+  }
+
+  strats.push({ id: nextStratId++, name, raid, image: imagePath, sections: defaultSections() });
   activeRaid = raid;
   activeStratId = strats[strats.length - 1].id;
+  _pendingStratFile = null;
   closeStratUpload();
   renderStrats();
   showToast(`"${name}" added to ${raid}.`);
@@ -3577,19 +3626,59 @@ function onStratDrop(e, targetId) {
   renderStrats();
 }
 
-function replaceStratImage(event, id) {
+async function replaceStratImage(event, id) {
   const file = event.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const strat = strats.find(s => s.id === id);
-    if (strat) {
-      strat.image = e.target.result;
-      renderStrats();
-      showToast('Image updated.');
+  const strat = strats.find(s => s.id === id);
+  if (!strat) return;
+
+  const cfg = getGHConfig();
+  if (!cfg.token) {
+    // No token — fall back to base64
+    const reader = new FileReader();
+    reader.onload = e => { strat.image = e.target.result; renderStrats(); showToast('Image updated locally.'); };
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  showToast('⬆ Uploading image...');
+  try {
+    const filename = file.name;
+    const path = `strats/${filename}`;
+    const arrayBuf = await file.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuf);
+    let binary = '';
+    bytes.forEach(b => binary += String.fromCharCode(b));
+    const encoded = btoa(binary);
+
+    const apiUrl = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/${path}`;
+    const headers = {
+      'Authorization': `token ${cfg.token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    };
+
+    // Get SHA if file already exists
+    let sha = null;
+    const getRes = await fetch(apiUrl, { headers });
+    if (getRes.ok) sha = (await getRes.json()).sha;
+
+    const body = { message: `strat image: ${filename}`, content: encoded };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || `Upload failed: ${putRes.status}`);
     }
-  };
-  reader.readAsDataURL(file);
+
+    strat.image = path;
+    renderStrats();
+    showToast(`✓ Image uploaded: ${filename}`);
+  } catch(err) {
+    console.error('Image upload error:', err);
+    showToast(`✗ Upload failed: ${err.message}`, true);
+  }
 }
 
 function renameStrat(id) {
