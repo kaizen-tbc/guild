@@ -1489,7 +1489,13 @@ function showTab(tab, updateHash = true) {
   document.querySelectorAll('.nav-btn').forEach(b => {
     if ((b.getAttribute('onclick') || '').includes("'" + tab + "'")) b.classList.add('active');
   });
-  if (updateHash) window.location.hash = tab;
+  if (updateHash) {
+    if (tab === 'strats' && activeRaid) {
+      window.location.hash = 'strats/' + raidToSlug(activeRaid);
+    } else {
+      window.location.hash = tab;
+    }
+  }
   if (tab === 'overview') renderOverview();
   if (tab === 'strats') renderStrats();
   if (tab === 'roster') renderRoster();
@@ -1497,11 +1503,37 @@ function showTab(tab, updateHash = true) {
   if (tab === 'attendance') renderAttendance();
 }
 
+// Raid slug map
+const RAID_SLUGS = {
+  'serpentshrine-cavern': 'Serpentshrine Cavern',
+  'the-eye': 'The Eye',
+  'karazhan': 'Karazhan',
+  'gruuls-lair': "Gruul's Lair & Magtheridon's Lair",
+  'battle-for-mount-hyjal': 'Battle for Mount Hyjal',
+  'black-temple': 'Black Temple',
+  'sunwell-plateau': 'Sunwell Plateau',
+};
+
+function raidToSlug(raid) {
+  return Object.entries(RAID_SLUGS).find(([k,v]) => v === raid)?.[0] || '';
+}
+
+function applyHash(hash, updateHash = false) {
+  const parts = hash.split('/');
+  const tab = parts[0];
+  const raidSlug = parts[1] || null;
+  const valid = ['overview', 'roster', 'builder', 'attendance', 'strats'];
+  if (!valid.includes(tab)) return;
+  if (tab === 'strats' && raidSlug && RAID_SLUGS[raidSlug]) {
+    activeRaid = RAID_SLUGS[raidSlug];
+  }
+  showTab(tab, updateHash);
+}
+
 // Handle direct hash links and back/forward navigation
 window.addEventListener('hashchange', () => {
   const hash = window.location.hash.replace('#', '');
-  const valid = ['overview', 'roster', 'builder', 'attendance', 'strats'];
-  if (valid.includes(hash)) showTab(hash, false);
+  applyHash(hash, false);
 });
 
 // ======================================================
@@ -2190,6 +2222,10 @@ function renderStrats() {
 
 function setActiveRaid(raid) {
   activeRaid = raid;
+  // Update URL hash to reflect selected raid
+  if (window.location.hash.startsWith('#strats')) {
+    history.replaceState(null, '', '#strats/' + raidToSlug(raid));
+  }
   activeStratId = null;
   renderStrats();
 }
@@ -2271,18 +2307,13 @@ async function loadFromServer() {
   renderBuilder();
   // Jump to hash tab after data loads
   const hash = window.location.hash.replace('#', '');
-  const valid = ['overview', 'roster', 'builder', 'attendance', 'strats'];
-  if (hash && valid.includes(hash) && hash !== 'overview') showTab(hash, false);
+  if (hash) applyHash(hash, false);
 }
 
 // On load, check URL hash and open matching tab
 (function() {
   const hash = window.location.hash.replace('#', '');
-  const valid = ['overview', 'roster', 'builder', 'attendance', 'strats'];
-  if (hash && valid.includes(hash)) {
-    // Will be called after loadFromServer populates data
-    window._initialTab = hash;
-  }
+  if (hash) window._initialHash = hash;
 })();
 
 loadFromServer();
