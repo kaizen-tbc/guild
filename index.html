@@ -192,7 +192,8 @@ main {
 
 .bench-rule-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 4px; }
 .bench-rule-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; padding: 18px 14px; text-align: center; }
-.bench-rule-icon { font-size: 28px; margin-bottom: 8px; }
+.bench-rule-icon { margin-bottom: 10px; color: var(--gold); display: flex; justify-content: center; }
+.bench-rule-icon svg { width: 26px; height: 26px; }
 .bench-rule-title { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; color: var(--gold); margin-bottom: 6px; }
 .bench-rule-text { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
 
@@ -1462,7 +1463,7 @@ a[href] > div > div[style*="line-height:1.6"] {
             <th onclick="sortRoster('role')">Role ↕</th>
             <th onclick="sortRoster('status')">Status ↕</th>
             <th>Alt Of</th>
-            <th>Notes</th>
+            <th>Attendance</th>
           </tr>
         </thead>
         <tbody id="roster-tbody"></tbody>
@@ -1478,29 +1479,29 @@ a[href] > div > div[style*="line-height:1.6"] {
       </div>
     </div>
 
-    <p style="font-size:13px;color:var(--text-dim);margin:0 0 16px;max-width:720px;">
+    <p style="font-size:13px;color:var(--text-dim);margin:0 0 16px;max-width:560px;">
       Rotation is class-locked, not role-locked. We're only rotating where we have more raiders than slots in the exact same class. If you're on the bench, just confirm with an officer that you're ready to fill in on raid night. It's a rotation, and your turn comes around.
     </p>
 
     <div class="bench-rule-cards">
       <div class="bench-rule-card">
-        <div class="bench-rule-icon">🛡️</div>
+        <div class="bench-rule-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke-linejoin="round"/></svg></div>
         <div class="bench-rule-title">Tanks Don't Rotate</div>
         <div class="bench-rule-text">Tanks aren't part of the bench. We plan around tank absences with an off-spec sub or a pugged tank if needed.</div>
       </div>
       <div class="bench-rule-card">
-        <div class="bench-rule-icon">✋</div>
+        <div class="bench-rule-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
         <div class="bench-rule-title">No Sign Up, No Slot</div>
-        <div class="bench-rule-text">Confirming each week is what claims your spot. History sets priority. Confirming claims it.</div>
+        <div class="bench-rule-text">Confirming each week is what claims your spot. Show up ready, and your turn on the bench comes back around.</div>
       </div>
       <div class="bench-rule-card">
-        <div class="bench-rule-icon">📊</div>
-        <div class="bench-rule-title">Rank = Attendance Rate</div>
-        <div class="bench-rule-text">Raids attended ÷ raids eligible for, since your first raid. New joiners aren't penalized for history before they arrived.</div>
+        <div class="bench-rule-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="20" x2="5" y2="11"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="14"/></svg></div>
+        <div class="bench-rule-title">Rotation Is Tracked</div>
+        <div class="bench-rule-text">Officers track who's rotated through bench and for how long, so everyone gets fair time in the raid.</div>
       </div>
     </div>
 
-    <p style="font-size:12px;color:var(--text-dim);margin:14px 0 20px;max-width:720px;">
+    <p style="font-size:12px;color:var(--text-dim);margin:14px 0 20px;max-width:560px;">
       Only a few classes are tracked here right now, wherever we're currently stacked. That list grows as recruiting shifts.
     </p>
 
@@ -1727,11 +1728,24 @@ function getSortedLedger() {
 function getPlayerAttendanceStats(name) {
   const sorted = getSortedLedger();
   const firstIdx = sorted.findIndex(week => week.names.includes(name));
-  if (firstIdx === -1) return { eligible: 0, attended: 0, rate: 0 };
+  if (firstIdx === -1) return { eligible: 0, attended: 0, rate: 0, startDate: null };
   const benchedDates = new Set((benchConfig.benchedByDecision[name]) || []);
   const eligibleWeeks = sorted.slice(firstIdx).filter(week => !benchedDates.has(week.date));
   const attended = eligibleWeeks.filter(week => week.names.includes(name)).length;
-  return { eligible: eligibleWeeks.length, attended, rate: eligibleWeeks.length > 0 ? attended / eligibleWeeks.length : 0 };
+  return { eligible: eligibleWeeks.length, attended, rate: eligibleWeeks.length > 0 ? attended / eligibleWeeks.length : 0, startDate: sorted[firstIdx].date || null };
+}
+
+function renderAttendanceBar(name) {
+  const stats = getPlayerAttendanceStats(name);
+  if (stats.eligible === 0) return `<span style="font-size:11px;color:var(--text-dim);">—</span>`;
+  const pct = Math.round(stats.rate * 100);
+  const title = `${stats.attended}/${stats.eligible} for raids starting ${stats.startDate}`;
+  return `<div title="${title}" style="display:flex;align-items:center;gap:6px;cursor:default;">
+    <div style="width:48px;height:5px;border-radius:3px;background:var(--border);overflow:hidden;flex-shrink:0;">
+      <div style="width:${pct}%;height:100%;background:var(--gold);"></div>
+    </div>
+    <span style="font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;">${pct}%</span>
+  </div>`;
 }
 
 function computeBenchPool(pool) {
@@ -1773,16 +1787,21 @@ function computeBenchPool(pool) {
   return { pool, raiding, bench };
 }
 
+function getBenchedCount(name) {
+  return (benchConfig.benchedByDecision[name] || []).length;
+}
+
 function renderBenchReadOnlyRow(entry) {
   const p = entry.player;
   const cc = classColor(p.class);
-  const pct = Math.round(entry.rate * 100);
+  const benchedCount = getBenchedCount(p.name);
   return `<div class="bench-row">
     <div class="bench-name">
       <span class="class-dot" style="background:var(--${cc});width:7px;height:7px;flex-shrink:0;"></span>
       <span class="class-${cc}">${p.name}</span>
+      <span style="font-size:11px;color:var(--text-dim);">${p.ms || ''}</span>
     </div>
-    <div class="bench-rate-text">${entry.attended}/${entry.eligible} (${pct}%)</div>
+    ${benchedCount > 0 ? `<div class="bench-rate-text">Benched ${benchedCount}x</div>` : '<div></div>'}
   </div>`;
 }
 
@@ -2102,7 +2121,7 @@ function renderRoster() {
       <td>${roleBadge(p.role)}</td>
       <td>${statusBadge(p.status)}</td>
       <td style="color:var(--text-dim);font-size:14px;">${p.altOf || '—'}</td>
-      <td style="color:var(--text-dim);font-size:14px;">${p.notes || ''}</td>
+      <td>${renderAttendanceBar(p.name)}</td>
 
     </tr>`;
   }).join('');

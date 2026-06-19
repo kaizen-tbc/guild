@@ -1413,7 +1413,8 @@ a[href] > div > div[style*="line-height:1.6"] {
   padding: 18px 14px;
   text-align: center;
 }
-.bench-rule-icon { font-size: 28px; margin-bottom: 8px; }
+.bench-rule-icon { margin-bottom: 10px; color: var(--gold); display: flex; justify-content: center; }
+.bench-rule-icon svg { width: 26px; height: 26px; }
 .bench-rule-title {
   font-family: 'Fraunces', serif;
   font-weight: 600;
@@ -1770,7 +1771,7 @@ a[href] > div > div[style*="line-height:1.6"] {
             <th onclick="sortRoster('role')">Role ↕</th>
             <th onclick="sortRoster('status')">Status ↕</th>
             <th>Alt Of</th>
-            <th>Notes</th>
+            <th>Attendance</th>
             <th style="width:90px;">Actions</th>
           </tr>
         </thead>
@@ -1818,29 +1819,29 @@ a[href] > div > div[style*="line-height:1.6"] {
       <button class="btn btn-small btn-gold" onclick="resetAllConfirmations()">Start New Week (Reset Confirmations)</button>
     </div>
 
-    <p style="font-size:13px;color:var(--text-dim);margin:0 0 16px;max-width:720px;">
+    <p style="font-size:13px;color:var(--text-dim);margin:0 0 16px;max-width:560px;">
       Rotation is class-locked, not role-locked. We're only rotating where we have more raiders than slots in the exact same class. We want this to be fair and transparent for the classes we're heavily stacked on. If you're on the bench, just confirm you're ready to fill in on raid night. It's a rotation, and your turn comes around.
     </p>
 
     <div class="bench-rule-cards">
       <div class="bench-rule-card">
-        <div class="bench-rule-icon">🛡️</div>
+        <div class="bench-rule-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke-linejoin="round"/></svg></div>
         <div class="bench-rule-title">Tanks Don't Rotate</div>
         <div class="bench-rule-text">Tanks aren't part of the bench. We plan around tank absences with an off-spec sub or a pugged tank if needed.</div>
       </div>
       <div class="bench-rule-card">
-        <div class="bench-rule-icon">✋</div>
+        <div class="bench-rule-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
         <div class="bench-rule-title">No Sign Up, No Slot</div>
         <div class="bench-rule-text">Confirming each week is what claims your spot. History sets priority. Confirming claims it.</div>
       </div>
       <div class="bench-rule-card">
-        <div class="bench-rule-icon">📊</div>
+        <div class="bench-rule-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="20" x2="5" y2="11"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="14"/></svg></div>
         <div class="bench-rule-title">Rank = Attendance Rate</div>
         <div class="bench-rule-text">Raids attended ÷ raids eligible for, since your first raid. New joiners aren't penalized for history before they arrived.</div>
       </div>
     </div>
 
-    <p style="font-size:12px;color:var(--text-dim);margin:14px 0 20px;max-width:720px;">
+    <p style="font-size:12px;color:var(--text-dim);margin:14px 0 20px;max-width:560px;">
       Only a few classes are tracked here right now, wherever we're currently stacked. That list grows as recruiting shifts. Officers can manually override any status below for edge cases the math can't see.
     </p>
 
@@ -2422,23 +2423,81 @@ function handleLedgerCSVUpload(event) {
   parseAttendanceCSV(file, (names) => {
     if (names === null) {
       showToast('Could not find a "Name" column in this CSV.', true);
+      event.target.value = '';
       return;
     }
     if (names.length === 0) {
       showToast('No names found in this CSV.', true);
+      event.target.value = '';
       return;
     }
-    const today = new Date().toISOString().slice(0, 10);
-    attendanceLedger.push({
-      id: nextLedgerId++,
-      date: today,
-      label: file.name.replace(/\.[^.]+$/, ''),
-      names: names,
-    });
-    renderAttendanceLedger();
-    showToast(`Added ${names.length} names from "${file.name}".`);
+    _pendingCSVUpload = { names, filename: file.name };
+    openLedgerDateModal();
   });
   event.target.value = '';
+}
+
+let _pendingCSVUpload = null;
+
+function openLedgerDateModal() {
+  const today = new Date().toISOString().slice(0, 10);
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay open';
+  overlay.id = 'ledger-date-overlay';
+  overlay.innerHTML = `
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-header">
+        <h3>Raid Date</h3>
+        <button class="modal-close" onclick="cancelLedgerUpload()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:12px;color:var(--text-dim);margin:0 0 14px;">
+          If you already uploaded a log for this same date (e.g. SSC and TK same night), this will merge into that week instead of creating a duplicate.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Date of this raid</label>
+          <input type="date" class="form-input" id="ledger-date-input" value="${today}" style="width:100%;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="cancelLedgerUpload()">Cancel</button>
+        <button class="btn btn-gold" onclick="confirmLedgerUpload()">Add</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function cancelLedgerUpload() {
+  _pendingCSVUpload = null;
+  const overlay = document.getElementById('ledger-date-overlay');
+  if (overlay) overlay.remove();
+}
+
+function confirmLedgerUpload() {
+  if (!_pendingCSVUpload) return;
+  const date = document.getElementById('ledger-date-input').value;
+  const { names, filename } = _pendingCSVUpload;
+
+  const existing = attendanceLedger.find(w => w.date === date);
+  if (existing) {
+    // Merge: union of names, keep existing label, no duplicate entry for the date
+    const merged = new Set([...existing.names, ...names]);
+    existing.names = [...merged];
+    showToast(`Merged ${names.length} names into existing ${date} raid.`);
+  } else {
+    attendanceLedger.push({
+      id: nextLedgerId++,
+      date,
+      label: filename.replace(/\.[^.]+$/, ''),
+      names,
+    });
+    showToast(`Added ${names.length} names for ${date}.`);
+  }
+
+  _pendingCSVUpload = null;
+  document.getElementById('ledger-date-overlay').remove();
+  renderAttendanceLedger();
 }
 
 function removeNameFromLedgerWeek(weekId, name) {
@@ -2726,7 +2785,7 @@ function getSortedLedger() {
 function getPlayerAttendanceStats(name) {
   const sorted = getSortedLedger();
   const firstIdx = sorted.findIndex(week => week.names.includes(name));
-  if (firstIdx === -1) return { eligible: 0, attended: 0, rate: 0 };
+  if (firstIdx === -1) return { eligible: 0, attended: 0, rate: 0, startDate: null };
 
   const benchedDates = new Set(benchConfig.benchedByDecision[name] || []);
   const eligibleWeeks = sorted.slice(firstIdx).filter(week => !benchedDates.has(week.date));
@@ -2736,7 +2795,25 @@ function getPlayerAttendanceStats(name) {
     eligible: eligibleWeeks.length,
     attended,
     rate: eligibleWeeks.length > 0 ? attended / eligibleWeeks.length : 0,
+    startDate: sorted[firstIdx].date || null,
   };
+}
+
+// Small inline bar + percentage for the roster table's Attendance column.
+// Hover shows the raw fraction and the date their tracked history begins.
+function renderAttendanceBar(name) {
+  const stats = getPlayerAttendanceStats(name);
+  if (stats.eligible === 0) {
+    return `<span style="font-size:11px;color:var(--text-dim);">—</span>`;
+  }
+  const pct = Math.round(stats.rate * 100);
+  const title = `${stats.attended}/${stats.eligible} for raids starting ${stats.startDate}`;
+  return `<div title="${title}" style="display:flex;align-items:center;gap:6px;cursor:default;">
+    <div style="width:48px;height:5px;border-radius:3px;background:var(--border);overflow:hidden;flex-shrink:0;">
+      <div style="width:${pct}%;height:100%;background:var(--gold);"></div>
+    </div>
+    <span style="font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;">${pct}%</span>
+  </div>`;
 }
 
 // Build the full computed view for one bench pool: who's raiding, who's
@@ -3356,7 +3433,7 @@ function renderRoster() {
       <td>${roleBadge(p.role)}</td>
       <td>${statusBadge(p.status)}</td>
       <td style="color:var(--text-dim);font-size:14px;">${p.altOf || '—'}</td>
-      <td style="color:var(--text-dim);font-size:14px;">${p.notes || ''}</td>
+      <td>${renderAttendanceBar(p.name)}</td>
       <td>
         <div class="action-cell">
           <button class="btn btn-small" onclick="openEditModal(${p.id})">Edit</button>
